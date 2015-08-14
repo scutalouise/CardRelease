@@ -1,0 +1,52 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<beans xmlns="http://www.springframework.org/schema/beans"
+	xmlns:context="http://www.springframework.org/schema/context"
+	xmlns:mvc="http://www.springframework.org/schema/mvc" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+	xsi:schemaLocation="http://www.springframework.org/schema/beans
+		http://www.springframework.org/schema/beans/spring-beans.xsd
+		http://www.springframework.org/schema/context
+		http://www.springframework.org/schema/context/spring-context.xsd
+		http://www.springframework.org/schema/mvc
+		http://www.springframework.org/schema/mvc/spring-mvc.xsd">
+	<!-- 启用spring mvc注解 -->
+	<mvc:annotation-driven />
+
+	<!-- 设置使用注解的类所在的jar包 -->
+	<context:component-scan base-package="com.sanploy.card.controller" />
+
+	<!-- 配置视图解析器 -->
+	<bean
+		class="org.springframework.web.servlet.view.InternalResourceViewResolver">
+		<property name="prefix" value="/WEB-INF/views/" />
+		<property name="suffix" value=".jsp" />
+		<property name="contentType" value="text/html;charset=utf-8" />
+	</bean>
+	<!-- 配置jasper的支持：报表 -->
+	<bean class="org.springframework.web.servlet.view.jasperreports.JasperReportsViewResolver">
+		<property name="viewClass" value="com.sanploy.card.report.CardReportView"></property>
+		<property name="jdbcDataSource" ref="dataSource"></property>
+		<property name="order" value="100"></property>
+		<property name="viewNames" value="*Report"></property>
+		<property name="cache" value="false"></property>
+		<property name="prefix" value="/WEB-INF/classes/reports/"></property>
+		<property name="suffix" value=".jasper"></property>
+	</bean>
+
+	<!-- mvc:静态资源处理需要使用；对于已经映射的请求与资源由spingmvc去比对查找；未找到的，默认为静态资源；交给tomcat(应用服务器)中web.xml配置的defaultServlet处理 -->
+	<mvc:default-servlet-handler />
+	<!-- 配置自定义拦截器：处理权限检查，权限不通过，将返回登陆页面 -->
+	<mvc:interceptors>
+		<mvc:interceptor>
+			<mvc:mapping path="/index/**" />
+			<mvc:mapping path="/dot/**" />
+			<mvc:mapping path="/cutomser/**" />
+			<mvc:mapping path="/basedata/**" />
+			<mvc:mapping path="/authority/**" />
+			<mvc:mapping path="/cardRelease/**" />
+			<mvc:mapping path="/loss/**" />
+			<mvc:mapping path="/trade/**" />
+			<bean class="com.sanploy.card.intercepter.AuthorityIntercepter"></bean>
+		</mvc:interceptor>
+	</mvc:interceptors>
+
+</beans>
